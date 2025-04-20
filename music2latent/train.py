@@ -9,6 +9,8 @@ import random
 import os
 from tqdm import tqdm
 from music2latent.models import UNet, Encoder, Decoder
+from contrastive_audio_dataset.contrastive_audio_dataset import ContrastiveAudioDataset
+from datasets import load_dataset
 
 class ContrastiveLoss(nn.Module):
     def __init__(self, temperature=0.07):
@@ -142,18 +144,18 @@ def train_one_epoch(model, train_loader, optimizer, loss_fn, device):
     for batch in tqdm(train_loader, desc='Training'):
         # Move data to device
         original = batch['original'].to(device)
-        augmented = batch['augmented'].to(device)
+        transformed = batch['transformed'].to(device)
         
         # Get embeddings
         with torch.no_grad():
             # Original embeddings - no gradient needed as this is our target
             orig_emb = model.encoder(original, extract_features=False)
             
-        # Augmented embeddings - need gradient for training
-        aug_emb = model.encoder(augmented, extract_features=False)
+        # Transformed embeddings - need gradient for training
+        trans_emb = model.encoder(transformed, extract_features=False)
         
         # Compute loss
-        loss = loss_fn(aug_emb, orig_emb)
+        loss = loss_fn(trans_emb, orig_emb)
         
         # Backprop
         optimizer.zero_grad()
@@ -171,12 +173,12 @@ def validate(model, val_loader, loss_fn, device):
     with torch.no_grad():
         for batch in tqdm(val_loader, desc='Validation'):
             original = batch['original'].to(device)
-            augmented = batch['augmented'].to(device)
+            transformed = batch['transformed'].to(device)
             
             orig_emb = model.encoder(original, extract_features=False)
-            aug_emb = model.encoder(augmented, extract_features=False)
+            trans_emb = model.encoder(transformed, extract_features=False)
             
-            loss = loss_fn(aug_emb, orig_emb)
+            loss = loss_fn(trans_emb, orig_emb)
             total_loss += loss.item()
             
     return total_loss / len(val_loader)
@@ -230,10 +232,12 @@ def main():
     # Create model
     model = UNet().to(device)
     
+    # Load FMA dataset
+    fma_dataset = load_dataset("ryanleeme17/free-music-archive-retrieval")
+    
     # Create dataset and dataloaders
-    transform = AudioAugmentation()
-    train_dataset = FMADataset('path/to/fma/train', transform=transform)
-    val_dataset = FMADataset('path/to/fma/val', transform=transform)
+    train_dataset = ContrastiveAudioDataset(fma_dataset['train'])
+    val_dataset = ContrastiveAudioDataset(fma_dataset['validation'])
     
     train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True, num_workers=4)
     val_loader = DataLoader(val_dataset, batch_size=32, shuffle=False, num_workers=4)
