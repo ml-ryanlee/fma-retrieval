@@ -6,7 +6,7 @@ from torch.utils.data import Dataset
 # from datasets import load_dataset
 
 class ContrastiveAudioDataset(Dataset):
-    def __init__(self, dataset, sample_rate=44100):
+    def __init__(self, dataset, sample_rate=44100, audio_length=30):
         """
         Args:
             dataset: The dataset to be used (expecting free-music-archive-retrieval).
@@ -14,6 +14,7 @@ class ContrastiveAudioDataset(Dataset):
         """
         self.dataset = dataset
         self.sample_rate = sample_rate
+        self.audio_length = audio_length
 
         self.audiomentations = am.Compose([
             am.AdjustDuration(duration_seconds=5.0, p=1),
@@ -34,6 +35,9 @@ class ContrastiveAudioDataset(Dataset):
             ], p=1,)
         ])
 
+        self.original_audio_duration_adjustment = am.AdjustDuration(duration_seconds=audio_length, p=1)
+        self.adjust_to_5s = am.AdjustDuration(duration_seconds=5.0, p=1)
+
     def __len__(self):
         return len(self.dataset)
     
@@ -45,13 +49,17 @@ class ContrastiveAudioDataset(Dataset):
             audio_data = sample["audio"]["array"]
             if(self.sample_rate != 44100):
                 audio_data = librosa.resample(audio_data, orig_sr=44100, target_sr=self.sample_rate)
+            audio_data = audio_data.astype(np.float32)
 
             if(random.random() < 1/8):
                 # use existed q_audio_back for background noise
                 transformed = librosa.resample(sample["q_audio_back"]["array"], orig_sr=44100, target_sr=self.sample_rate)
+                transformed = self.adjust_to_5s(transformed.astype(np.float32), sample_rate=self.sample_rate)
             else:
                 # apply other transformation
                 transformed = self.audiomentations(audio_data, sample_rate=self.sample_rate)
+
+            audio_data = self.original_audio_duration_adjustment(audio_data, sample_rate=self.sample_rate)
 
             return {
                 "original": audio_data,
@@ -61,7 +69,7 @@ class ContrastiveAudioDataset(Dataset):
             print(f"Error processing sample {idx}: {e}")
             # Return a valid sample with zeros if there's an error
             return {
-                "original": np.zeros(5 * self.sample_rate),
+                "original": np.zeros(self.audio_length * self.sample_rate),
                 "transformed": np.zeros(5 * self.sample_rate),
             }
 
