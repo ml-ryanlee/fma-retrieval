@@ -4,6 +4,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 from torch.utils.data import Dataset, DataLoader
 import os
+import time
 import numpy as np
 import matplotlib.pyplot as plt
 from tqdm import tqdm
@@ -105,6 +106,8 @@ def train_model(model, train_loader, val_loader, num_epochs, learning_rate, devi
     
     for epoch in range(num_epochs):
         print(f'\nEpoch {epoch+1}/{num_epochs}')
+        # Start time
+        start_time = time.time()
         
         # Train
         train_loss = train_one_epoch(model, train_loader, optimizer, loss_fn, device)
@@ -115,6 +118,7 @@ def train_model(model, train_loader, val_loader, num_epochs, learning_rate, devi
         train_loss_history.append(train_loss)
         val_loss_history.append(val_loss)
         print(f'Train Loss: {train_loss:.4f}, Val Loss: {val_loss:.4f}')
+        print(f'Epoch time: {time.time() - start_time:.2f}s')
         
         # Save best model
         if val_loss < best_val_loss:
@@ -155,6 +159,9 @@ def main():
     # Set device
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(f'Using device: {device}')
+
+    # Start time
+    start_time = time.time()
     
     # Create model
     clap_module = laion_clap.CLAP_Module(enable_fusion=False)
@@ -167,8 +174,8 @@ def main():
     fma_dataset = fma_dataset.train_test_split(test_size=0.2, seed=42)
     
     # Create dataset and dataloaders
-    train_dataset = ContrastiveAudioDataset(fma_dataset['train'], sample_rate=44100, audio_length=10)
-    val_dataset = ContrastiveAudioDataset(fma_dataset['test'], sample_rate=44100, audio_length=10)
+    train_dataset = ContrastiveAudioDataset(fma_dataset['train'], sample_rate=48000, audio_length=10)
+    val_dataset = ContrastiveAudioDataset(fma_dataset['test'], sample_rate=48000, audio_length=10)
     print(f'Train dataset size: {len(train_dataset)}')
     print(f'Validation dataset size: {len(val_dataset)}')
     
@@ -186,6 +193,11 @@ def main():
     )
     plot_loss(train_loss_history, val_loss_history)
     print("Training complete. Loss plot saved as 'loss_plot.png'.")
+    
+    # End time
+    elapsed_time = time.time() - start_time
+    elapsed_time_str = time.strftime("%H:%M:%S", time.gmtime(elapsed_time))
+    print(f'Total time taken: {elapsed_time_str}')
 
 if __name__ == '__main__':
     main()
