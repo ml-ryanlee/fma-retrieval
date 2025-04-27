@@ -5,6 +5,7 @@ import torch.optim as optim
 from torch.utils.data import Dataset, DataLoader
 import os
 import time
+import random
 import numpy as np
 import matplotlib.pyplot as plt
 from tqdm import tqdm
@@ -168,10 +169,21 @@ def main():
     clap_module.load_ckpt()
     model = LinearProbe(model=clap_module.model, mlp=True, freeze=True, in_ch=512, out_ch=512, act='None')
     model = model.to(device)
-    
+
     # Load FMA dataset
     fma_dataset = load_dataset("ryanleeme17/free-music-archive-retrieval", split='train')
-    fma_dataset = fma_dataset.train_test_split(test_size=0.2, seed=42)
+
+    # Split dataset into train, validation and test sets
+    train_test_split=0.7
+    random.seed(42)
+    dataset_size = len(fma_dataset)
+    indices = list(range(dataset_size))
+    random.shuffle(indices)
+    train_size = int(dataset_size * train_test_split)
+    train_indices = indices[:train_size]
+
+    fma_dataset = fma_dataset.select(train_indices) # Excluding the test set
+    fma_dataset = fma_dataset.train_test_split(test_size=0.2, seed=42) # Splitting into train and validation sets
     
     # Create dataset and dataloaders
     train_dataset = ContrastiveAudioDataset(fma_dataset['train'], sample_rate=48000, audio_length=10)
@@ -188,7 +200,7 @@ def main():
         train_loader=train_loader,
         val_loader=val_loader,
         num_epochs=50,
-        learning_rate=1e-4,
+        learning_rate=5e-4,
         device=device
     )
     plot_loss(train_loss_history, val_loss_history)
