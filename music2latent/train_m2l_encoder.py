@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 from tqdm import tqdm
 from models import Encoder
 from audio import to_representation_encoder
-from contrastive_audio_dataset.contrastive_audio_dataset import ContrastiveAudioDataset
+from contrastive_audio_dataset import ContrastiveAudioDataset
 from datasets import load_dataset
 
 class ContrastiveLoss(nn.Module):
