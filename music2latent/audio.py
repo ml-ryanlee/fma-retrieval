@@ -2,7 +2,7 @@ import torch
 import torch.nn.functional as F
 import numpy as np
 
-from .hparams import *
+from hparams import *
 
 
 def wv2spec(wv, hop_size=256, fac=4):

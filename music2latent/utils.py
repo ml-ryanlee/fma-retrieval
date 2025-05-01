@@ -3,7 +3,7 @@ from os import path as ospath
 from huggingface_hub import hf_hub_download
 import torch
 
-from .hparams import *
+from hparams import *
 
 # Get scaling coefficients c_skip, c_out, c_in based on noise sigma
 # These are used to scale the input and output of the consistency model, while satisfying the boundary condition for consistency models
