@@ -9,8 +9,8 @@ import random
 import numpy as np
 import matplotlib.pyplot as plt
 from tqdm import tqdm
-from music2latent.models import Encoder
-from music2latent.audio import to_representation_encoder
+from models import Encoder
+from audio import to_representation_encoder
 from contrastive_audio_dataset.contrastive_audio_dataset import ContrastiveAudioDataset
 from datasets import load_dataset
 
