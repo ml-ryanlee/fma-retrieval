@@ -199,8 +199,8 @@ def main():
     fma_dataset = fma_dataset.train_test_split(test_size=0.2, seed=42) # Splitting into train and validation sets
     
     # Create dataset and dataloaders
-    train_dataset = ContrastiveAudioDataset(fma_dataset['train'], sample_rate=48000, audio_length=10)
-    val_dataset = ContrastiveAudioDataset(fma_dataset['test'], sample_rate=48000, audio_length=10)
+    train_dataset = ContrastiveAudioDataset(fma_dataset['train'], sample_rate=44100, audio_length=10)
+    val_dataset = ContrastiveAudioDataset(fma_dataset['test'], sample_rate=44100, audio_length=10)
     print(f'Train dataset size: {len(train_dataset)}')
     print(f'Validation dataset size: {len(val_dataset)}')
     

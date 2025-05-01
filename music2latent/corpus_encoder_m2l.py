@@ -48,7 +48,7 @@ def create_embeddings_jsonl(dataset, model: Encoder, output_file):
                     sample_output[key] = None
                 else:
                     # Resample audio and convert to tensor
-                    audio_data = librosa.resample(y=audio_data, orig_sr=44100, target_sr=48000)
+                    audio_data = librosa.resample(y=audio_data, orig_sr=44100, target_sr=44100)
                     audio_data = torch.from_numpy(audio_data).float().to(torch_device)
                     
                     # Convert to music2latent representation
