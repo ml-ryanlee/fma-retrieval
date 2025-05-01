@@ -14,7 +14,7 @@ class ContrastiveAudioDataset(Dataset):
         """
         self.dataset = dataset
         self.sample_rate = sample_rate
-        self.audio_length = audio_length
+        self.audio_length = 30
 
         self.audiomentations = am.Compose([
             am.AdjustDuration(duration_seconds=5.0, p=1),
