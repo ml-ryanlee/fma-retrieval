@@ -19,15 +19,15 @@ def spec2wv(S,P, hop_size=256, fac=4):
     return istft(SP, fac=fac, hop_size=hop_size, device=SP.device)
 
 def denormalize_realimag(x):
-    x = x/beta_rescale
-    return torch.sign(x)*(x.abs()**(1./alpha_rescale))
+    x = x/hparams.beta_rescale
+    return torch.sign(x)*(x.abs()**(1./hparams.alpha_rescale))
 
 def normalize_complex(x):
-    return beta_rescale*(x.abs()**alpha_rescale).to(torch.complex64)*torch.exp(1j*torch.angle(x).to(torch.complex64))
+    return hparams.beta_rescale*(x.abs()**hparams.alpha_rescale).to(torch.complex64)*torch.exp(1j*torch.angle(x).to(torch.complex64))
 
 def denormalize_complex(x):
-    x = x/beta_rescale
-    return (x.abs()**(1./alpha_rescale)).to(torch.complex64)*torch.exp(1j*torch.angle(x).to(torch.complex64))
+    x = x/hparams.beta_rescale
+    return (x.abs()**(1./hparams.alpha_rescale)).to(torch.complex64)*torch.exp(1j*torch.angle(x).to(torch.complex64))
 
 def wv2complex(wv, hop_size=256, fac=4):
     X = stft(wv, hop_size=hop_size, fac=fac, device=wv.device)
