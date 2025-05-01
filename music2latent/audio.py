@@ -46,13 +46,13 @@ def realimag2wv(x, hop_size=256, fac=4):
     return istft(X, fac=fac, hop_size=hop_size, device=X.device).clamp(-1.,1.)
 
 def to_representation_encoder(x):
-    return wv2realimag(x, hop)
+    return wv2realimag(x, hparams.hop)
 
 def to_representation(x):
-    return wv2realimag(x, hop)
+    return wv2realimag(x, hparams.hop)
 
 def to_waveform(x):
-    return realimag2wv(x, hop)
+    return realimag2wv(x, hparams.hop)
 
 def overlap_and_add(signal, frame_step):
 
