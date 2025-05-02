@@ -83,6 +83,8 @@ def train_one_epoch(model: Encoder, train_loader: DataLoader, optimizer, loss_fn
             orig_emb = orig_emb.reshape(orig_emb.size(0), -1)
             trans_emb = trans_emb.reshape(trans_emb.size(0), -1)
             
+            print(f"Shape before loss - trans_emb: {trans_emb.shape}, orig_emb: {orig_emb.shape}") # DEBUG
+
             # Compute loss
             loss = loss_fn(trans_emb, orig_emb)
             

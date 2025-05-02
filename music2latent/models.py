@@ -369,6 +369,9 @@ class Encoder(nn.Module):
         # Reshape for LSTM or bottleneck
         x = x.reshape(x.size(0), x.size(1) * x.size(2), x.size(3))
         if extract_features:
+            # Apply adaptive pooling over the time dimension (dim 2) to get fixed size
+            pool = nn.AdaptiveAvgPool1d(1)
+            x = pool(x)
             return x
 
         # Apply LSTM if enabled
