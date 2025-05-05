@@ -1,0 +1,18 @@
+#!/bin/bash
+  
+#SBATCH --partition=gpu
+#SBATCH --gres=gpu:l40s:1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=4
+#SBATCH --mem=80GB
+#SBATCH --time=4:00:00
+#SBATCH --account=yzhao010_1531
+
+module purge
+module load python
+
+source /home1/ychiu443/DLTermProject/env/bin/activate
+cd /home1/ychiu443/DLTermProject/temp
+python3 retrain_clap_whole.py
+python3 corpus_encoder_clap_whole.py
+python3 fmar_retrieval_clap_lp.py
