@@ -46,10 +46,10 @@ If you use this code or dataset in your research, please cite our work:
 
 @misc{lee2025remixproof,
   title={Remix-Proof Retrieval: Robust Audio Encoders for Detecting Copyright Infringement},
-  author={Lee, Ryan* and Chiu, Yi-Chieh* and Karande, Abhir and Goyal, Ayush and Pearl, Harrison and Hong, Matthew and Cobb, Spencer},
+  author={Lee, Ryan* and Chiu, Yi-Chieh* and Karande, Abhir* and Goyal, Ayush and Pearl, Harrison and Hong, Matthew and Cobb, Spencer},
   year={2025},
   note={*Equal contribution},
   publisher={GitHub},
-  howpublished={\url{https://github.com/ml-ryanlee/remix-proof-retrieval}}
+  howpublished={\url{https://github.com/username/remix-proof-retrieval}}
 }
 
